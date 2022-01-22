@@ -1,5 +1,12 @@
 ﻿using PayamGostarClient.TelephonySystem;
 using Septa.PayamGostarApiClient.SecurityItem;
+using Septa.PayamGostarApiClient.Form;
+using Septa.PayamGostarApiClient.Invoice.PurchaseInvoice;
+using Septa.PayamGostarApiClient.Invoice.SalesInvoice;
+using Septa.PayamGostarApiClient.Organization;
+using Septa.PayamGostarApiClient.Person;
+using Septa.PayamGostarApiClient.Task;
+using Septa.PayamGostarApiClient.Ticket;
 
 namespace PayamGostarClient
 {
@@ -12,5 +19,19 @@ namespace PayamGostarClient
         ITelephonySystemClient GetTelephonySystem();
 
         ISecurityItemClient GetSecurityItem();
+
+        IFormClient GetFormClient();
+
+        IPersonClient GetPersonClient();
+
+        ITicketClient GetTicketClient();
+
+        ISalesInvoiceClient GetSalesInvoiceClient();
+
+        IPurchaseInvoiceClient GetPurchaseInvoiceClient();
+
+        IOrganizationClient GetOrganizationClient();
+
+        ITaskClient GetTaskClient();
     }
 }

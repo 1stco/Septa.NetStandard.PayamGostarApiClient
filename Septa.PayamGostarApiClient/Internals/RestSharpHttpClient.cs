@@ -178,6 +178,34 @@ namespace PayamGostarClient.Internals
 
         }
 
+        public TResponse PostJson<TResponse>(string serviceUrl, string path, PgAuthenticationTicket ticket) where TResponse : class
+        {
+            var response = InternalSendJson(Method.POST, serviceUrl, path, ticket);
+            if (!response.StatusCode.IsOk())
+                throw new InvalidOperationException($"Server responded with status {response.StatusCode}");
+
+            return JsonConvert.DeserializeObject<TResponse>(response.Content);
+        }
+
+        public byte[] DownloadFile(string serviceUrl, string path, PgAuthenticationTicket ticket, Dictionary<string, string> model)
+        {
+            var client = new RestClient(serviceUrl);
+            var request = new RestRequest(path, Method.GET);
+
+            if (ticket != null)
+            {
+                request.AddHeader("Authorization", $"Bearer {ticket.AccessToken}");
+            }
+
+            if (model != null && model.Count > 0)
+            {
+                foreach (var kv in model)
+                    request.AddQueryParameter(kv.Key, kv.Value);
+            }
+
+            return client.DownloadData(request);
+        }
+
         private static JsonSerializerSettings DefaultJsonSerializerSettings
         {
             get
@@ -185,6 +213,22 @@ namespace PayamGostarClient.Internals
                 return new JsonSerializerSettings { DateTimeZoneHandling = DateTimeZoneHandling.Local, ReferenceLoopHandling = ReferenceLoopHandling.Ignore };
             }
         }
+
+        private static IRestResponse InternalSendJson(Method method, string serviceUrl, string path, PgAuthenticationTicket ticket)
+        {
+            var client = new RestClient(serviceUrl);
+            var request = new RestRequest(path, method);
+            request.AddHeader("Content-Type", "application/json");
+            request.JsonSerializer = NewtonsoftJsonSerializer.Default;
+
+            if (ticket != null)
+            {
+                request.AddHeader("Authorization", $"Bearer {ticket.AccessToken}");
+            }
+
+            return client.Execute(request);
+        }
+
     }
 
     public static class HttpStatusCodeExtensions
